@@ -30,8 +30,9 @@ export class ElectronService {
 
   updateWithBase64(base64: any) {
     if (this.electron) {
-        this.electron.updateWithBase64(base64, () => {
-            alert("Wallpaper is changed.")
+        this.electron.updateWithBase64(base64, (result: any) => {
+            /* alert("Wallpaper is changed.") */
+            console.log(result)
         });
     }
   }

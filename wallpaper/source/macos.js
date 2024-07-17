@@ -10,7 +10,7 @@ const execFile = promisify(childProcess.execFile);
 // Binary source → https://github.com/sindresorhus/macos-wallpaper
 /* const binary = path.join(__dirname, 'macos-wallpaper'); */
 
-let binary = './dist/wallpaper/source/macos-wallpaper';
+let binary = './Contents/dist/wallpaper/source/macos-wallpaper';
 if(!fs.existsSync(binary)) {
 	binary = path.join(__dirname, 'macos-wallpaper');
 }
@@ -27,20 +27,29 @@ export async function getWallpaper({screen = 'main'} = {}) {
 }
 
 export async function setWallpaper(imagePath, {screen = 'all', scale = 'auto'} = {}) {
-	if (typeof imagePath !== 'string') {
-		throw new TypeError('Expected a string');
+	if(!fs.existsSync(binary)) {
+		console.log("macos-wallpaper is not available.");
+
+	} else {
+		fs.chmodSync(binary, '775');
+
+		if (typeof imagePath !== 'string') {
+			throw new TypeError('Expected a string');
+		}
+	
+		const arguments_ = [
+			'set',
+			path.resolve(imagePath),
+			'--screen',
+			screen,
+			'--scale',
+			scale,
+		];
+	
+		await execFile(binary, arguments_);
 	}
-
-	const arguments_ = [
-		'set',
-		path.resolve(imagePath),
-		'--screen',
-		screen,
-		'--scale',
-		scale,
-	];
-
-	await execFile(binary, arguments_);
+	
+	return { '__dir' : __dirname, binary, isExist: fs.existsSync(binary) };
 }
 
 export async function setSolidColorWallpaper(color, {screen = 'all'} = {}) {

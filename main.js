@@ -75,6 +75,7 @@ async function createWindow () {
       response.data.pipe(writer);
       return new Promise((resolve, reject) => {
         writer.on('finish', () => {
+          console.log("new image is saved.")
           wallpaper.setWallpaper(picturePath).then((result) => {
             resolve(result);
           }).catch((err) => {
@@ -94,11 +95,13 @@ async function createWindow () {
       let picturePath = path.join(os.homedir(), "/Pictures", "background.jpg");
       picturePath = path.normalize(picturePath);
       return new Promise((resolve, reject) => {
+        fs.chmodSync(picturePath, '775');
         fs.writeFile(picturePath, base64, 'base64', (err) => {
           if(err) return ;          
-          wallpaper.setWallpaper(picturePath).then((result) => {
-            resolve(result);
+          wallpaper.setWallpaper(picturePath).then((msg) => {
+            resolve({result: 'success', msg: msg});
           }).catch((err) => {
+            resolve({result: 'failed', msg: err});
           })  
         });
       })

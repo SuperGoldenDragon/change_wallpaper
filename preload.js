@@ -17,9 +17,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     })
   },
   updateWithBase64: (base64, callback) => {
-    ipcRenderer.invoke("updateWithBase64", { base64 }).then(() => {
+    ipcRenderer.invoke("updateWithBase64", { base64 }).then((result) => {
         if(!callback) return ;
-        callback()
+        callback(result)
     })
   },
 });
