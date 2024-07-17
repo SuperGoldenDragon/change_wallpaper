@@ -16,7 +16,7 @@ const alertDialog = (msg) => {
 
 let mainWindow
 async function createWindow () {
-  const wallpaper = await import('wallpaper');
+  const wallpaper = await import('./wallpaper/index.js');
   mainWindow = new BrowserWindow({ 
     width: 800,
     height: 600,
@@ -34,7 +34,7 @@ async function createWindow () {
     })
   );
 
-  mainWindow.webContents.openDevTools()
+  
   mainWindow.on('closed', function () {
     mainWindow = null
   })
@@ -52,18 +52,19 @@ async function createWindow () {
     if(!filenames || !filenames.length) {
       return
     };
-    try {
-      wallpaper.setWallpaper(filenames[0]).then(msg => alertDialog(JSON.stringify(msg))).catch(err => JSON.stringify(err))
-    } catch (e) {
-      console.log(e)
-    }
+    return new Promise((resolve, reject) => {
+      try {
+        wallpaper.getWallpaper().then(previousPath => console.log("Previous:" + previousPath)).catch(err => resolve(err));
+        wallpaper.setWallpaper(filenames[0]).then(msg => console.log(msg)).catch(err => console.log(err))
+      } catch (e) {
+        console.log(e)
+      }
+    })
   })
 
   ipcMain.handle("updateImageWithUrl", async (event, params) => {
     try {
-      const wallpaper = await import('wallpaper');
       const { imageUrl } = params;
-      console.log(imageUrl)
       const response = await axios({
         url: imageUrl,
         method: 'GET',
@@ -89,14 +90,12 @@ async function createWindow () {
 
   ipcMain.handle("updateWithBase64", async (event, params) => {
     try {
-      const wallpaper = await import('wallpaper');
       const { base64 } = params;
       let picturePath = path.join(os.homedir(), "/Pictures", "background.jpg");
       picturePath = path.normalize(picturePath);
-      console.log(picturePath)
       return new Promise((resolve, reject) => {
         fs.writeFile(picturePath, base64, 'base64', (err) => {
-          if(err) return ;
+          if(err) return ;          
           wallpaper.setWallpaper(picturePath).then((result) => {
             resolve(result);
           }).catch((err) => {

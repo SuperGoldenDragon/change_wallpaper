@@ -27,7 +27,6 @@
     "ngx-electron": "^2.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "wallpaper": "^7.2.1",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
@@ -51,16 +50,18 @@
     "mac": {
       "category": "public.app-category.developer-tools"
     },
-    "win" : {
-      "target" : "nsis"
+    "win": {
+      "target": "nsis"
     },
     "files": [
       "**/*",
       "dist/electron-app/browser/**"
     ],
-    "extraFiles": [{
-      "from": "node_modules/wallpaper",
-      "to": "dist/wallpaper"
-    }]
+    "extraFiles": [
+      {
+        "from": "wallpaper",
+        "to": "dist/wallpaper"
+      }
+    ]
   }
 }
